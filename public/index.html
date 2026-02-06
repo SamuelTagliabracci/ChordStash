@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChordStash - Chord Sheet Manager</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <header class="sidebar-header">
+        <h1>🎸 ChordStash</h1>
+        <button id="theme-toggle" title="Toggle dark/light mode">🌙</button>
+      </header>
+
+      <div class="sidebar-search">
+        <input type="text" id="search-input" placeholder="Search songs...">
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-filter="all">All Songs</button>
+        <button class="nav-btn" data-filter="favorites">★ Favorites</button>
+      </nav>
+
+      <div id="song-list" class="song-list">
+        <!-- Songs populated by JS -->
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="add-song-btn" class="add-btn">+ Add Song</button>
+        <button id="import-btn" class="add-btn import-btn">📥 Import URL</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state">
+        <h2>No song selected</h2>
+        <p>Select a song from the sidebar or add a new one</p>
+      </div>
+
+      <!-- Song View -->
+      <div id="song-view" class="song-view hidden">
+        <header class="song-header">
+          <div class="song-info">
+            <h2 id="song-title"></h2>
+            <p id="song-artist"></p>
+            <a id="song-source" class="song-source hidden" href="#" target="_blank" rel="noopener">View original ↗</a>
+          </div>
+          <div class="song-actions">
+            <button id="favorite-btn" title="Toggle favorite">☆</button>
+            <button id="edit-btn" title="Edit song">✎</button>
+            <button id="delete-btn" title="Delete song">🗑</button>
+          </div>
+        </header>
+
+        <div class="toolbar">
+          <div class="transpose-controls">
+            <span>Transpose:</span>
+            <button id="transpose-down">−</button>
+            <span id="transpose-value">0</span>
+            <button id="transpose-up">+</button>
+          </div>
+
+          <div class="scroll-controls">
+            <span>Auto-scroll:</span>
+            <button id="scroll-toggle">▶</button>
+            <input type="range" id="scroll-speed" min="1" max="10" value="3">
+          </div>
+
+          <div class="instrument-select">
+            <label for="instrument">Diagrams:</label>
+            <select id="instrument">
+              <option value="guitar">Guitar</option>
+              <option value="ukulele">Ukulele</option>
+              <option value="bass">Bass</option>
+              <option value="piano">Piano</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="song-body">
+          <!-- Main lyrics/chord sheet area -->
+          <div id="chord-sheet" class="chord-sheet">
+            <!-- Parsed chord sheet rendered here -->
+          </div>
+
+          <!-- Right side tools panel -->
+          <aside id="tools-panel" class="tools-panel">
+            <!-- Play Along Section -->
+            <div id="media-section" class="panel-section">
+              <button id="media-toggle" class="panel-toggle">
+                <span class="toggle-icon">▼</span> Play Along
+              </button>
+              <div id="media-content" class="panel-content">
+                <div class="media-inputs">
+                  <div class="media-group">
+                    <label>YouTube</label>
+                    <div class="media-input-row">
+                      <input type="text" id="youtube-url-input" placeholder="Paste YouTube URL...">
+                      <button id="save-youtube" class="media-btn-icon" title="Save">💾</button>
+                      <button id="search-youtube" class="media-btn-icon" title="Search YouTube">🔍</button>
+                    </div>
+                  </div>
+                  <div class="media-group">
+                    <label>Spotify</label>
+                    <div class="media-input-row">
+                      <input type="text" id="spotify-url-input" placeholder="Paste Spotify URL...">
+                      <button id="save-spotify" class="media-btn-icon" title="Save">💾</button>
+                      <button id="search-spotify" class="media-btn-icon" title="Search Spotify">🔍</button>
+                    </div>
+                  </div>
+                </div>
+                <div id="youtube-player" class="youtube-player hidden">
+                  <!-- YouTube iframe goes here -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Strumming Pattern Section -->
+            <div id="strumming-section" class="panel-section hidden">
+              <button id="strumming-toggle" class="panel-toggle">
+                <span class="toggle-icon">▼</span> Strumming Pattern
+              </button>
+              <div id="strumming-content" class="panel-content">
+                <!-- Strumming patterns rendered here -->
+              </div>
+            </div>
+
+            <!-- Chords Section -->
+            <div id="chords-section" class="panel-section">
+              <button id="chords-toggle" class="panel-toggle">
+                <span class="toggle-icon">▼</span> Chords
+              </button>
+              <div id="chords-content" class="panel-content">
+                <div id="chord-diagrams">
+                  <!-- Chord diagrams rendered here -->
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- Song Editor -->
+      <div id="song-editor" class="song-editor hidden">
+        <header class="editor-header">
+          <h2 id="editor-title">Add New Song</h2>
+          <div class="editor-actions">
+            <button id="cancel-edit-btn">Cancel</button>
+            <button id="save-btn" class="primary">Save</button>
+          </div>
+        </header>
+
+        <form id="song-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-title">Title *</label>
+              <input type="text" id="input-title" required>
+            </div>
+            <div class="form-group">
+              <label for="input-artist">Artist</label>
+              <input type="text" id="input-artist">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-source">Source URL</label>
+            <input type="url" id="input-source" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label for="input-content">
+              Chord Sheet (ChordPro format)
+              <a href="#" id="format-help" class="help-link">?</a>
+            </label>
+            <textarea id="input-content" required placeholder="{title: Song Name}
+{artist: Artist Name}
+
+[Verse 1]
+[Am]This is a [G]line with [C]chords
+[F]Another line [G]here
+
+[Chorus]
+[C]Chorus [G]line [Am]goes [F]here"></textarea>
+          </div>
+        </form>
+
+        <!-- Format Help Modal -->
+        <div id="format-modal" class="modal hidden">
+          <div class="modal-content">
+            <h3>ChordPro Format</h3>
+            <pre>
+{title: Song Title}
+{artist: Artist Name}
+{key: Am}
+
+[Verse 1]
+[Am]Lyrics with [G]chords in [C]brackets
+Just lyrics without chords
+
+[Chorus]
+[F]More [G]lyrics [Am]here [C]
+
+{comment: This is a comment}
+            </pre>
+            <p><strong>Tips:</strong></p>
+            <ul>
+              <li>Chords go in [square brackets] before the syllable</li>
+              <li>Section headers like [Verse 1] on their own line</li>
+              <li>Metadata in {curly braces}</li>
+            </ul>
+            <button id="close-modal">Got it</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Import Modal -->
+      <div id="import-modal" class="modal hidden">
+        <div class="modal-content import-modal-content">
+          <h3>📥 Import from URL</h3>
+          <p>Paste an Ultimate Guitar link to import the song automatically.</p>
+          <div class="form-group">
+            <input type="url" id="import-url" placeholder="https://tabs.ultimate-guitar.com/tab/...">
+          </div>
+          <div id="import-error" class="import-error hidden"></div>
+          <div id="import-success" class="import-success hidden">✓ Imported! Paste next URL...</div>
+          <div id="import-loading" class="import-loading hidden">
+            <span class="spinner"></span> Importing...
+          </div>
+          <div class="modal-actions">
+            <button id="cancel-import">Cancel</button>
+            <button id="do-import" class="primary">Import</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/chords.js"></script>
+  <script src="/js/diagrams.js"></script>
+  <script src="/js/parser.js"></script>
+  <script src="/js/transpose.js"></script>
+  <script src="/js/strumming.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

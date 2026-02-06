@@ -1,0 +1,9 @@
+# ChordStash Configuration
+app:
+  name: chordstash
+  port: 3000
+
+server:
+  domain: localhost
+  user: your-username
+  install_path: /path/to/ChordStash
