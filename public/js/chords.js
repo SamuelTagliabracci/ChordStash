@@ -75,6 +75,7 @@ const CHORD_DB = {
     // Add9 chords
     'Cadd9':  { frets: ['x', 3, 2, 0, 3, 0], fingers: [0, 2, 1, 0, 3, 0] },
     'Gadd9':  { frets: [3, 0, 0, 0, 0, 3], fingers: [1, 0, 0, 0, 0, 2] },
+    'Dadd2':  { frets: ['x', 'x', 0, 2, 3, 0], fingers: [0, 0, 0, 1, 2, 0] },
     'Dadd9':  { frets: ['x', 'x', 0, 2, 3, 0], fingers: [0, 0, 0, 1, 2, 0] },
     'Aadd9':  { frets: ['x', 0, 2, 2, 0, 0], fingers: [0, 0, 1, 2, 0, 0] },
     'Eadd9':  { frets: [0, 2, 2, 1, 0, 2], fingers: [0, 2, 3, 1, 0, 4] },
@@ -152,6 +153,77 @@ const CHORD_DB = {
     'Am6':    { frets: ['x', 0, 2, 2, 1, 2], fingers: [0, 0, 2, 3, 1, 4] },
     'Dm6':    { frets: ['x', 'x', 0, 2, 0, 1], fingers: [0, 0, 0, 2, 0, 1] },
     'Em6':    { frets: [0, 2, 2, 0, 2, 0], fingers: [0, 1, 2, 0, 3, 0] },
+
+    // Flat/Sharp Major chords
+    'Ab':     { frets: [4, 6, 6, 5, 4, 4], fingers: [1, 3, 4, 2, 1, 1], barre: 4 },
+    'Bb':     { frets: ['x', 1, 3, 3, 3, 1], fingers: [0, 1, 2, 3, 4, 1], barre: 1 },
+    'C#':     { frets: ['x', 4, 6, 6, 6, 4], fingers: [0, 1, 3, 3, 3, 1], barre: 4 },
+    'Db':     { frets: ['x', 4, 6, 6, 6, 4], fingers: [0, 1, 3, 3, 3, 1], barre: 4 },
+    'D#':     { frets: ['x', 6, 8, 8, 8, 6], fingers: [0, 1, 3, 3, 3, 1], barre: 6 },
+    'Eb':     { frets: ['x', 6, 8, 8, 8, 6], fingers: [0, 1, 3, 3, 3, 1], barre: 6 },
+    'F#':     { frets: [2, 4, 4, 3, 2, 2], fingers: [1, 3, 4, 2, 1, 1], barre: 2 },
+    'Gb':     { frets: [2, 4, 4, 3, 2, 2], fingers: [1, 3, 4, 2, 1, 1], barre: 2 },
+    'G#':     { frets: [4, 6, 6, 5, 4, 4], fingers: [1, 3, 4, 2, 1, 1], barre: 4 },
+
+    // Flat/Sharp Minor chords
+    'Bbm':    { frets: ['x', 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1], barre: 1 },
+    'C#m':    { frets: ['x', 4, 6, 6, 5, 4], fingers: [0, 1, 3, 4, 2, 1], barre: 4 },
+    'D#m':    { frets: ['x', 6, 8, 8, 7, 6], fingers: [0, 1, 3, 4, 2, 1], barre: 6 },
+    'Ebm':    { frets: ['x', 6, 8, 8, 7, 6], fingers: [0, 1, 3, 4, 2, 1], barre: 6 },
+    'F#m':    { frets: [2, 4, 4, 2, 2, 2], fingers: [1, 3, 4, 1, 1, 1], barre: 2 },
+    'G#m':    { frets: [4, 6, 6, 4, 4, 4], fingers: [1, 3, 4, 1, 1, 1], barre: 4 },
+    'Abm':    { frets: [4, 6, 6, 4, 4, 4], fingers: [1, 3, 4, 1, 1, 1], barre: 4 },
+
+    // Flat/Sharp 7th chords
+    'Ab7':    { frets: [4, 6, 4, 5, 4, 4], fingers: [1, 3, 1, 2, 1, 1], barre: 4 },
+    'Bb7':    { frets: ['x', 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1], barre: 1 },
+    'C#7':    { frets: ['x', 4, 6, 4, 6, 4], fingers: [0, 1, 3, 1, 4, 1], barre: 4 },
+    'Db7':    { frets: ['x', 4, 6, 4, 6, 4], fingers: [0, 1, 3, 1, 4, 1], barre: 4 },
+    'Eb7':    { frets: ['x', 'x', 1, 3, 2, 3], fingers: [0, 0, 1, 3, 2, 4] },
+    'F#7':    { frets: [2, 4, 2, 3, 2, 2], fingers: [1, 3, 1, 2, 1, 1], barre: 2 },
+    'G#7':    { frets: [4, 6, 4, 5, 4, 4], fingers: [1, 3, 1, 2, 1, 1], barre: 4 },
+
+    // Flat/Sharp Minor 7th chords
+    'Bbm7':   { frets: ['x', 1, 3, 1, 2, 1], fingers: [0, 1, 3, 1, 2, 1], barre: 1 },
+    'C#m7':   { frets: ['x', 4, 6, 4, 5, 4], fingers: [0, 1, 3, 1, 2, 1], barre: 4 },
+    'F#m7':   { frets: [2, 4, 2, 2, 2, 2], fingers: [1, 3, 1, 1, 1, 1], barre: 2 },
+    'G#m7':   { frets: [4, 6, 4, 4, 4, 4], fingers: [1, 3, 1, 1, 1, 1], barre: 4 },
+    'Abm7':   { frets: [4, 6, 4, 4, 4, 4], fingers: [1, 3, 1, 1, 1, 1], barre: 4 },
+
+    // Flat/Sharp Major 7th chords
+    'Bbmaj7': { frets: ['x', 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1], barre: 1 },
+    'F#maj7': { frets: [2, 4, 3, 3, 2, 2], fingers: [1, 4, 2, 3, 1, 1], barre: 2 },
+    'Abmaj7': { frets: [4, 6, 5, 5, 4, 4], fingers: [1, 4, 2, 3, 1, 1], barre: 4 },
+    'G#maj7': { frets: [4, 6, 5, 5, 4, 4], fingers: [1, 4, 2, 3, 1, 1], barre: 4 },
+
+    // Additional sus chords
+    'Bsus4':  { frets: ['x', 2, 4, 4, 5, 2], fingers: [0, 1, 2, 3, 4, 1], barre: 2 },
+    'F#sus4': { frets: [2, 4, 4, 4, 2, 2], fingers: [1, 2, 3, 4, 1, 1], barre: 2 },
+    'Bbsus4': { frets: ['x', 1, 3, 3, 4, 1], fingers: [0, 1, 2, 3, 4, 1], barre: 1 },
+    'Absus4': { frets: [4, 6, 6, 6, 4, 4], fingers: [1, 2, 3, 4, 1, 1], barre: 4 },
+    'Bsus2':  { frets: ['x', 2, 4, 4, 2, 2], fingers: [0, 1, 3, 4, 1, 1], barre: 2 },
+
+    // Additional add chords
+    'Gadd4':  { frets: [3, 2, 0, 0, 1, 3], fingers: [3, 2, 0, 0, 1, 4] },
+    'Bmadd11': { frets: ['x', 2, 4, 4, 3, 0], fingers: [0, 1, 3, 4, 2, 0] },
+
+    // Additional power chords
+    'Bb5':    { frets: ['x', 1, 3, 3, 'x', 'x'], fingers: [0, 1, 3, 4, 0, 0] },
+    'C#5':    { frets: ['x', 4, 6, 6, 'x', 'x'], fingers: [0, 1, 3, 4, 0, 0] },
+    'Db5':    { frets: ['x', 4, 6, 6, 'x', 'x'], fingers: [0, 1, 3, 4, 0, 0] },
+    'D#5':    { frets: ['x', 6, 8, 8, 'x', 'x'], fingers: [0, 1, 3, 4, 0, 0] },
+    'Eb5':    { frets: ['x', 6, 8, 8, 'x', 'x'], fingers: [0, 1, 3, 4, 0, 0] },
+    'F#5':    { frets: [2, 4, 4, 'x', 'x', 'x'], fingers: [1, 3, 4, 0, 0, 0] },
+    'Gb5':    { frets: [2, 4, 4, 'x', 'x', 'x'], fingers: [1, 3, 4, 0, 0, 0] },
+    'G#5':    { frets: [4, 6, 6, 'x', 'x', 'x'], fingers: [1, 3, 4, 0, 0, 0] },
+    'Ab5':    { frets: [4, 6, 6, 'x', 'x', 'x'], fingers: [1, 3, 4, 0, 0, 0] },
+
+    // Additional slash chords
+    'A/F#':   { frets: [2, 0, 2, 2, 2, 0], fingers: [2, 0, 1, 3, 4, 0] },
+    'G/F':    { frets: [1, 'x', 0, 0, 0, 3], fingers: [1, 0, 0, 0, 0, 3] },
+
+    // Additional 9th / add chords
+    'G6#9':   { frets: [3, 2, 0, 1, 0, 1], fingers: [4, 3, 0, 1, 0, 2] },
   },
 
   ukulele: {
@@ -218,6 +290,20 @@ const CHORD_DB = {
     'C/E':    { frets: [0, 0, 0, 0], fingers: [0, 0, 0, 0] },
     'Am/G':   { frets: [2, 4, 3, 0], fingers: [1, 4, 3, 0] },
     'Am/E':   { frets: [2, 0, 0, 0], fingers: [1, 0, 0, 0] },
+
+    // Flat/Sharp Major
+    'Bb':     { frets: [3, 2, 1, 1], fingers: [3, 2, 1, 1], barre: 1 },
+    'Eb':     { frets: [3, 3, 3, 1], fingers: [2, 3, 4, 1], barre: 1 },
+    'Ab':     { frets: [5, 3, 4, 3], fingers: [3, 1, 2, 1], barre: 3 },
+    'Db':     { frets: [1, 1, 1, 4], fingers: [1, 1, 1, 4], barre: 1 },
+    'F#':     { frets: [3, 1, 2, 1], fingers: [3, 1, 2, 1] },
+    'G#':     { frets: [5, 3, 4, 3], fingers: [3, 1, 2, 1], barre: 3 },
+
+    // Flat/Sharp Minor
+    'Bbm':    { frets: [3, 1, 1, 1], fingers: [3, 1, 1, 1], barre: 1 },
+    'C#m':    { frets: [1, 1, 0, 0], fingers: [1, 2, 0, 0] },
+    'F#m':    { frets: [2, 1, 2, 0], fingers: [2, 1, 3, 0] },
+    'G#m':    { frets: [4, 3, 4, 2], fingers: [2, 1, 3, 1], barre: 2 },
   },
 
   bass: {
@@ -378,6 +464,59 @@ const CHORD_DB = {
     'D9':     { intervals: [0, 4, 7, 10, 14], root: 2 },
     'E9':     { intervals: [0, 4, 7, 10, 14], root: 4 },
     'G9':     { intervals: [0, 4, 7, 10, 14], root: 7 },
+
+    // Flat/Sharp Major
+    'Ab':     { intervals: [0, 4, 7], root: 8 },
+    'Bb':     { intervals: [0, 4, 7], root: 10 },
+    'C#':     { intervals: [0, 4, 7], root: 1 },
+    'Db':     { intervals: [0, 4, 7], root: 1 },
+    'D#':     { intervals: [0, 4, 7], root: 3 },
+    'Eb':     { intervals: [0, 4, 7], root: 3 },
+    'F#':     { intervals: [0, 4, 7], root: 6 },
+    'Gb':     { intervals: [0, 4, 7], root: 6 },
+    'G#':     { intervals: [0, 4, 7], root: 8 },
+
+    // Flat/Sharp Minor
+    'Abm':    { intervals: [0, 3, 7], root: 8 },
+    'Bbm':    { intervals: [0, 3, 7], root: 10 },
+    'C#m':    { intervals: [0, 3, 7], root: 1 },
+    'D#m':    { intervals: [0, 3, 7], root: 3 },
+    'Ebm':    { intervals: [0, 3, 7], root: 3 },
+    'F#m':    { intervals: [0, 3, 7], root: 6 },
+    'G#m':    { intervals: [0, 3, 7], root: 8 },
+
+    // Flat/Sharp 7th
+    'Ab7':    { intervals: [0, 4, 7, 10], root: 8 },
+    'Bb7':    { intervals: [0, 4, 7, 10], root: 10 },
+    'C#7':    { intervals: [0, 4, 7, 10], root: 1 },
+    'Db7':    { intervals: [0, 4, 7, 10], root: 1 },
+    'Eb7':    { intervals: [0, 4, 7, 10], root: 3 },
+    'F#7':    { intervals: [0, 4, 7, 10], root: 6 },
+    'G#7':    { intervals: [0, 4, 7, 10], root: 8 },
+
+    // Flat/Sharp Minor 7th
+    'Abm7':   { intervals: [0, 3, 7, 10], root: 8 },
+    'Bbm7':   { intervals: [0, 3, 7, 10], root: 10 },
+    'C#m7':   { intervals: [0, 3, 7, 10], root: 1 },
+    'F#m7':   { intervals: [0, 3, 7, 10], root: 6 },
+    'G#m7':   { intervals: [0, 3, 7, 10], root: 8 },
+
+    // Flat/Sharp Maj7
+    'Bbmaj7': { intervals: [0, 4, 7, 11], root: 10 },
+    'F#maj7': { intervals: [0, 4, 7, 11], root: 6 },
+    'Abmaj7': { intervals: [0, 4, 7, 11], root: 8 },
+    'G#maj7': { intervals: [0, 4, 7, 11], root: 8 },
+
+    // Additional sus
+    'Bsus4':  { intervals: [0, 5, 7], root: 11 },
+    'F#sus4': { intervals: [0, 5, 7], root: 6 },
+    'Bbsus4': { intervals: [0, 5, 7], root: 10 },
+    'Bsus2':  { intervals: [0, 2, 7], root: 11 },
+
+    // Additional add/misc
+    'Gadd4':  { intervals: [0, 4, 5, 7], root: 7 },
+    'Bmadd11': { intervals: [0, 3, 5, 7], root: 11 },
+    'G6#9':   { intervals: [0, 4, 7, 9, 15], root: 7 },
   }
 };
 
@@ -390,19 +529,54 @@ const ENHARMONIC = {
   'G#': 'Ab', 'Ab': 'G#'
 };
 
-// Get chord data with enharmonic fallback
+// Get chord data with enharmonic and smart fallbacks
 function getChordData(chord, instrument) {
   const db = CHORD_DB[instrument];
   if (!db) return null;
 
-  // Try direct match
-  if (db[chord]) return { ...db[chord], name: chord };
+  // Helper: try direct + enharmonic lookup
+  function lookup(name) {
+    if (db[name]) return { ...db[name], name: chord };
+    const root = name.match(/^[A-G][#b]?/)?.[0];
+    if (root && ENHARMONIC[root]) {
+      const alt = name.replace(root, ENHARMONIC[root]);
+      if (db[alt]) return { ...db[alt], name: chord };
+    }
+    return null;
+  }
 
-  // Try enharmonic equivalent
-  const root = chord.match(/^[A-G][#b]?/)?.[0];
-  if (root && ENHARMONIC[root]) {
-    const altChord = chord.replace(root, ENHARMONIC[root]);
-    if (db[altChord]) return { ...db[altChord], name: chord };
+  // 1. Direct match (with enharmonic)
+  let result = lookup(chord);
+  if (result) return result;
+
+  // 2. Normalize abbreviations: "sus" → "sus4", "maj" → major
+  let normalized = chord;
+  if (/sus$/.test(chord)) {
+    normalized = chord + '4';
+  } else if (/maj$/.test(chord) && !/maj[0-9]/.test(chord)) {
+    normalized = chord.replace(/maj$/, '');
+  }
+  if (normalized !== chord) {
+    result = lookup(normalized);
+    if (result) return result;
+  }
+
+  // 3. Slash chord: strip bass note, try base chord
+  if (chord.includes('/')) {
+    let base = chord.split('/')[0];
+    result = lookup(base);
+    if (result) return result;
+    // Also try normalizing the base
+    let normBase = base;
+    if (/sus$/.test(base)) {
+      normBase = base + '4';
+    } else if (/maj$/.test(base) && !/maj[0-9]/.test(base)) {
+      normBase = base.replace(/maj$/, '');
+    }
+    if (normBase !== base) {
+      result = lookup(normBase);
+      if (result) return result;
+    }
   }
 
   return null;

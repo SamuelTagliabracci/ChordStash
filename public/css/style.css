@@ -269,6 +269,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
 .empty-state {
@@ -329,6 +330,7 @@ body {
 .song-actions {
   display: flex;
   gap: 0.5rem;
+  margin-right: 180px;
 }
 
 .song-actions button {
@@ -655,20 +657,23 @@ body {
 }
 
 .lyric-block {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.6em;
 }
 
 .chord-line {
   color: var(--chord-color);
   font-weight: 700;
   white-space: pre;
-  min-height: 1.4em;
+  min-height: 1.2em;
+  line-height: 1.2;
   letter-spacing: 0;
+  margin-bottom: 0;
 }
 
 .lyrics-line {
   white-space: pre;
-  min-height: 1.4em;
+  min-height: 1.2em;
+  line-height: 1.4;
 }
 
 .chord {
@@ -785,6 +790,7 @@ body {
 .editor-actions {
   display: flex;
   gap: 0.5rem;
+  margin-right: 180px;
 }
 
 .editor-actions button {
@@ -1001,14 +1007,58 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* ============ Mobile Menu Button ============ */
+.mobile-menu-btn {
+  display: none;
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 40;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.mobile-menu-btn:hover {
+  background: var(--bg-tertiary);
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 45;
+}
+
 /* ============ Responsive ============ */
 @media (max-width: 900px) {
   .tools-panel {
-    display: none;
+    width: 100%;
+    min-width: 0;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .song-body {
+    flex-direction: column;
   }
 }
 
 @media (max-width: 700px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .sidebar-overlay:not(.hidden) {
+    display: block;
+  }
+
   #sidebar {
     position: fixed;
     left: 0;
@@ -1022,11 +1072,420 @@ body {
     transform: translateX(0);
   }
 
-  .toolbar {
-    flex-direction: column;
+  /* Song header: title + actions on same row, artist below */
+  .song-header {
+    flex-wrap: nowrap;
     align-items: flex-start;
-    gap: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 3.5rem;
+    gap: 0.5rem;
   }
+
+  .song-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .song-info h2 {
+    font-size: 1.15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .song-info p {
+    font-size: 0.85rem;
+  }
+
+  .song-actions {
+    margin-right: 0;
+    flex-shrink: 0;
+    gap: 0.25rem;
+  }
+
+  .song-actions button {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  /* Toolbar: single compact row */
+  .toolbar {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    overflow-x: auto;
+    font-size: 0.75rem;
+  }
+
+  .transpose-controls,
+  .scroll-controls,
+  .instrument-select {
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .transpose-controls span,
+  .scroll-controls span,
+  .instrument-select label {
+    display: none;
+  }
+
+  .transpose-controls button,
+  .scroll-controls button {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.8rem;
+  }
+
+  #scroll-speed {
+    width: 50px;
+  }
+
+  #instrument {
+    padding: 0.25rem 0.35rem;
+    font-size: 0.75rem;
+  }
+
+  /* Chord sheet: smaller font, wrap lines */
+  .chord-sheet {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    overflow-x: hidden;
+  }
+
+  .chord-line,
+  .lyrics-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .section-header {
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .editor-actions {
+    margin-right: 0;
+  }
+
+  .empty-state {
+    padding-left: 3.5rem;
+  }
+}
+
+/* ============ Login Landing Page ============ */
+.login-landing {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.login-card {
+  text-align: center;
+  padding: 3rem 2.5rem;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 24px var(--shadow);
+  max-width: 380px;
+  width: 100%;
+}
+
+.login-logo {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.login-google-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.login-google-btn:hover {
+  background: var(--bg-tertiary);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.google-icon {
+  flex-shrink: 0;
+}
+
+/* ============ User Menu (top right) ============ */
+.user-menu {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  z-index: 40;
+}
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.65rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-primary);
+}
+
+.user-menu-btn:hover {
+  background: var(--bg-tertiary);
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: white;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.user-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-chevron {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px var(--shadow);
+  overflow: hidden;
+}
+
+.user-dropdown-email {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background: var(--border);
+}
+
+.user-dropdown-item {
+  display: block;
+  padding: 0.65rem 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background 0.1s;
+}
+
+.user-dropdown-item:hover {
+  background: var(--bg-tertiary);
+}
+
+/* ============ Access Denied Page ============ */
+.access-denied-card .login-subtitle {
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.denied-email {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  font-family: monospace;
+}
+
+/* ============ Users Management Modal ============ */
+.users-modal-content {
+  min-width: 500px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.users-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.users-modal-header h3 {
+  margin-bottom: 0;
+}
+
+.users-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+
+.users-modal-close:hover {
+  color: var(--text-primary);
+}
+
+.users-add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.users-add-form input,
+.users-add-form select {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.users-add-form input[type="email"] {
+  flex: 2;
+  min-width: 0;
+}
+
+.users-add-form input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.users-add-form select {
+  flex-shrink: 0;
+}
+
+.users-add-form button {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.users-add-form button:hover {
+  background: var(--accent-hover);
+}
+
+.users-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-row:last-child {
+  border-bottom: none;
+}
+
+.user-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-row-email {
+  font-size: 0.85rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-row-name {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.user-row-role select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.user-row-delete {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  color: #e74c3c;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+}
+
+.user-row-delete:hover {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+}
+
+.user-row-you {
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 600;
 }
 
 /* ============ Scrollbar Styling ============ */

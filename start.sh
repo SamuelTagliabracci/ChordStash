@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Parse config.yaml for port
 PORT=$(grep 'port:' "$SCRIPT_DIR/config.yaml" | head -1 | awk '{print $2}')
-PORT=${PORT:-3000}
+PORT=${PORT:-9010}
 
 export PORT
 export NODE_ENV=${NODE_ENV:-production}

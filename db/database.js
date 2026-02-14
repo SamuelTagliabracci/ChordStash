@@ -29,6 +29,16 @@ sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_songs_title ON songs(title);
   CREATE INDEX IF NOT EXISTS idx_songs_artist ON songs(artist);
   CREATE INDEX IF NOT EXISTS idx_songs_favorite ON songs(is_favorite);
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    name TEXT,
+    role TEXT NOT NULL DEFAULT 'readonly',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  INSERT OR IGNORE INTO users (email, name, role) VALUES ('sam@cornelltech.ca', 'Sam', 'admin');
 `);
 
 // Add columns if they don't exist (for existing databases)
@@ -79,7 +89,16 @@ const stmts = {
   toggleFavorite: sqlite.prepare(`
     UPDATE songs SET is_favorite = NOT is_favorite, updated_at = CURRENT_TIMESTAMP WHERE id = ?
   `),
-  delete: sqlite.prepare('DELETE FROM songs WHERE id = ?')
+  delete: sqlite.prepare('DELETE FROM songs WHERE id = ?'),
+
+  // Users
+  getUserByEmail: sqlite.prepare('SELECT * FROM users WHERE email = ?'),
+  getAllUsers: sqlite.prepare('SELECT * FROM users ORDER BY created_at ASC'),
+  insertUser: sqlite.prepare('INSERT INTO users (email, name, role) VALUES (?, ?, ?)'),
+  updateUser: sqlite.prepare('UPDATE users SET name = ?, role = ? WHERE id = ?'),
+  deleteUser: sqlite.prepare('DELETE FROM users WHERE id = ?'),
+  getUserById: sqlite.prepare('SELECT * FROM users WHERE id = ?'),
+  countAdmins: sqlite.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'admin'")
 };
 
 const db = {
@@ -133,6 +152,39 @@ const db = {
   deleteSong(id) {
     const result = stmts.delete.run(id);
     return result.changes > 0;
+  },
+
+  // User methods
+  getUserByEmail(email) {
+    return stmts.getUserByEmail.get(email);
+  },
+
+  getAllUsers() {
+    return stmts.getAllUsers.all();
+  },
+
+  createUser({ email, name, role }) {
+    const result = stmts.insertUser.run(email, name || null, role || 'readonly');
+    return stmts.getUserById.get(result.lastInsertRowid);
+  },
+
+  updateUser(id, { name, role }) {
+    const result = stmts.updateUser.run(name || null, role, id);
+    if (result.changes === 0) return null;
+    return stmts.getUserById.get(id);
+  },
+
+  deleteUser(id) {
+    const result = stmts.deleteUser.run(id);
+    return result.changes > 0;
+  },
+
+  getUserById(id) {
+    return stmts.getUserById.get(id);
+  },
+
+  countAdmins() {
+    return stmts.countAdmins.get().count;
   }
 };
 

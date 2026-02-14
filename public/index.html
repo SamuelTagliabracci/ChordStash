@@ -9,7 +9,7 @@
 <body>
   <div id="app">
     <!-- Sidebar -->
-    <aside id="sidebar">
+    <aside id="sidebar" class="hidden">
       <header class="sidebar-header">
         <h1>🎸 ChordStash</h1>
         <button id="theme-toggle" title="Toggle dark/light mode">🌙</button>
@@ -34,8 +34,58 @@
       </div>
     </aside>
 
+    <!-- Login Landing Page -->
+    <div id="login-landing" class="login-landing">
+      <div class="login-card">
+        <div class="login-logo">🎸</div>
+        <h1 class="login-title">ChordStash</h1>
+        <p class="login-subtitle">Your personal chord sheet library</p>
+        <a href="/oauth2/sign_in?rd=/" class="login-google-btn">
+          <svg class="google-icon" viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Sign in with Google
+        </a>
+      </div>
+    </div>
+
+    <!-- Access Denied Landing Page -->
+    <div id="access-denied" class="login-landing hidden">
+      <div class="login-card access-denied-card">
+        <div class="login-logo">🔒</div>
+        <h1 class="login-title">Access Denied</h1>
+        <p class="login-subtitle">Your account does not have access to ChordStash. Please contact an administrator to request an invitation.</p>
+        <p id="denied-email" class="denied-email"></p>
+        <a href="/oauth2/sign_out?rd=/" class="login-google-btn">Sign out</a>
+      </div>
+    </div>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
     <!-- Main Content -->
-    <main id="main-content">
+    <main id="main-content" class="hidden">
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-btn" class="mobile-menu-btn">&#9776;</button>
+
+      <!-- User Menu (top right) -->
+      <div id="user-menu" class="user-menu">
+        <button id="user-menu-btn" class="user-menu-btn">
+          <div id="user-avatar" class="user-avatar"></div>
+          <span id="user-name" class="user-name"></span>
+          <span class="user-chevron">▾</span>
+        </button>
+        <div id="user-dropdown" class="user-dropdown hidden">
+          <div id="user-email-display" class="user-dropdown-email"></div>
+          <div class="user-dropdown-divider"></div>
+          <a href="#" id="manage-users-btn" class="user-dropdown-item hidden">Manage Users</a>
+          <a href="/oauth2/sign_out?rd=/" class="user-dropdown-item">Sign out</a>
+        </div>
+      </div>
+
       <!-- Empty State -->
       <div id="empty-state" class="empty-state">
         <h2>No song selected</h2>
@@ -234,6 +284,33 @@ Just lyrics without chords
           <div class="modal-actions">
             <button id="cancel-import">Cancel</button>
             <button id="do-import" class="primary">Import</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Management Modal -->
+      <div id="users-modal" class="modal hidden">
+        <div class="modal-content users-modal-content">
+          <div class="users-modal-header">
+            <h3>Manage Users</h3>
+            <button id="close-users-modal" class="users-modal-close">&times;</button>
+          </div>
+
+          <div class="users-add-form">
+            <input type="email" id="new-user-email" placeholder="Email address">
+            <input type="text" id="new-user-name" placeholder="Name (optional)">
+            <select id="new-user-role">
+              <option value="readonly">Read Only</option>
+              <option value="moderator">Moderator</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button id="add-user-btn" class="primary">Add</button>
+          </div>
+
+          <div id="users-error" class="import-error hidden"></div>
+
+          <div id="users-list" class="users-list">
+            <!-- Users populated by JS -->
           </div>
         </div>
       </div>

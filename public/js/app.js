@@ -11,16 +11,142 @@ const App = {
   scrollInterval: null,
   editMode: false,
   editingSongId: null,
+  user: null,
 
   // DOM elements
   els: {},
 
   // Initialize the app
   async init() {
+    // Apply theme early (before login check) based on saved preference
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+
+    await this.checkAuth();
+  },
+
+  // Check authentication and show login or app
+  async checkAuth() {
+    try {
+      const response = await fetch('/api/me');
+      if (response.ok) {
+        this.user = await response.json();
+        if (this.user.authenticated) {
+          // Check if user is in the allowed users list
+          if (this.user.error === 'not_authorized') {
+            this.showAccessDenied();
+            return;
+          }
+          // Try to get full Google profile (name, picture)
+          await this.fetchGoogleProfile();
+          this.showApp();
+          return;
+        }
+      }
+    } catch (err) {
+      // Not authenticated
+    }
+    this.showLogin();
+  },
+
+  // Fetch full name and avatar from oauth2-proxy userinfo
+  async fetchGoogleProfile() {
+    try {
+      const res = await fetch('/oauth2/userinfo');
+      if (res.ok) {
+        const profile = await res.json();
+        if (profile.name) this.user.name = profile.name;
+        if (profile.picture) this.user.picture = profile.picture;
+      }
+    } catch (err) {
+      // Fallback to email-derived name
+    }
+  },
+
+  showLogin() {
+    document.getElementById('login-landing').classList.remove('hidden');
+    document.getElementById('access-denied').classList.add('hidden');
+    document.getElementById('main-content').classList.add('hidden');
+    document.getElementById('sidebar').classList.add('hidden');
+  },
+
+  showAccessDenied() {
+    document.getElementById('login-landing').classList.add('hidden');
+    document.getElementById('access-denied').classList.remove('hidden');
+    document.getElementById('main-content').classList.add('hidden');
+    document.getElementById('sidebar').classList.add('hidden');
+    document.getElementById('denied-email').textContent = this.user.email;
+  },
+
+  async showApp() {
+    document.getElementById('login-landing').classList.add('hidden');
+    document.getElementById('access-denied').classList.add('hidden');
+    document.getElementById('main-content').classList.remove('hidden');
+    document.getElementById('sidebar').classList.remove('hidden');
+
     this.cacheElements();
     this.bindEvents();
-    this.loadTheme();
+    this.setupUserMenu();
+    this.applyRoleUI();
     await this.loadSongs();
+  },
+
+  setupUserMenu() {
+    if (!this.user || !this.user.email) return;
+
+    const email = this.user.email;
+    const displayName = this.user.name || email.split('@')[0];
+    const initial = displayName.charAt(0).toUpperCase();
+
+    const avatar = document.getElementById('user-avatar');
+
+    if (this.user.picture) {
+      // Use Google profile picture
+      avatar.textContent = '';
+      avatar.style.backgroundImage = `url(${this.user.picture})`;
+    } else {
+      // Fallback to letter avatar with colored background
+      let hash = 0;
+      for (let i = 0; i < email.length; i++) {
+        hash = email.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const hue = Math.abs(hash) % 360;
+      avatar.textContent = initial;
+      avatar.style.backgroundColor = `hsl(${hue}, 55%, 50%)`;
+    }
+
+    // Set display name and email in dropdown
+    document.getElementById('user-name').textContent = displayName;
+    document.getElementById('user-email-display').textContent = email;
+
+    // Dropdown toggle
+    const btn = document.getElementById('user-menu-btn');
+    const dropdown = document.getElementById('user-dropdown');
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      dropdown.classList.add('hidden');
+    });
+
+    // Manage Users (admin only)
+    const manageUsersBtn = document.getElementById('manage-users-btn');
+    manageUsersBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      dropdown.classList.add('hidden');
+      this.showUsersModal();
+    });
+
+    // Users modal events
+    document.getElementById('close-users-modal').addEventListener('click', () => this.hideUsersModal());
+    document.getElementById('add-user-btn').addEventListener('click', () => this.addUser());
+    document.getElementById('new-user-email').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.addUser();
+    });
   },
 
   // Cache DOM elements
@@ -97,6 +223,10 @@ const App = {
       // Chords panel
       chordsSection: document.getElementById('chords-section'),
       chordsToggle: document.getElementById('chords-toggle'),
+
+      // Mobile
+      mobileMenuBtn: document.getElementById('mobile-menu-btn'),
+      sidebarOverlay: document.getElementById('sidebar-overlay'),
     };
   },
 
@@ -189,6 +319,10 @@ const App = {
     this.els.spotifyUrlInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.saveSpotifyFromInput();
     });
+
+    // Mobile sidebar toggle
+    this.els.mobileMenuBtn.addEventListener('click', () => this.toggleMobileSidebar());
+    this.els.sidebarOverlay.addEventListener('click', () => this.closeMobileSidebar());
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => this.handleKeyboard(e));
@@ -283,6 +417,7 @@ const App = {
         item.addEventListener('click', (e) => {
           e.stopPropagation();
           this.selectSong(song.id);
+          this.closeMobileSidebar();
         });
         songsContainer.appendChild(item);
       }
@@ -856,10 +991,187 @@ const App = {
         }
         break;
       case 'Escape':
-        if (!this.els.songEditor.classList.contains('hidden')) {
+        if (!document.getElementById('users-modal').classList.contains('hidden')) {
+          this.hideUsersModal();
+        } else if (!this.els.songEditor.classList.contains('hidden')) {
           this.hideEditor();
         }
         break;
+    }
+  },
+
+  // Mobile sidebar
+  toggleMobileSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    this.els.sidebarOverlay.classList.toggle('hidden');
+  },
+
+  closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    this.els.sidebarOverlay.classList.add('hidden');
+  },
+
+  // Role-based UI
+  applyRoleUI() {
+    const role = this.user.role;
+    const canEdit = (role === 'moderator' || role === 'admin');
+    const isAdmin = (role === 'admin');
+
+    // Hide add/import buttons for readonly
+    this.els.addSongBtn.classList.toggle('hidden', !canEdit);
+    this.els.importBtn.classList.toggle('hidden', !canEdit);
+
+    // Hide song action buttons for readonly
+    this.els.favoriteBtn.classList.toggle('hidden', !canEdit);
+    this.els.editBtn.classList.toggle('hidden', !canEdit);
+    this.els.deleteBtn.classList.toggle('hidden', !canEdit);
+
+    // Show Manage Users for admin
+    const manageUsersBtn = document.getElementById('manage-users-btn');
+    manageUsersBtn.classList.toggle('hidden', !isAdmin);
+  },
+
+  // Admin panel
+  showUsersModal() {
+    const modal = document.getElementById('users-modal');
+    modal.classList.remove('hidden');
+    document.getElementById('users-error').classList.add('hidden');
+    document.getElementById('new-user-email').value = '';
+    document.getElementById('new-user-name').value = '';
+    document.getElementById('new-user-role').value = 'readonly';
+    this.loadUsers();
+  },
+
+  hideUsersModal() {
+    document.getElementById('users-modal').classList.add('hidden');
+  },
+
+  async loadUsers() {
+    try {
+      const response = await fetch('/api/users');
+      if (!response.ok) throw new Error('Failed to load users');
+      this.managedUsers = await response.json();
+      this.renderUsers();
+    } catch (err) {
+      console.error('Failed to load users:', err);
+    }
+  },
+
+  renderUsers() {
+    const list = document.getElementById('users-list');
+    list.innerHTML = '';
+
+    for (const user of this.managedUsers) {
+      const isSelf = user.email === this.user.email;
+      const row = document.createElement('div');
+      row.className = 'user-row';
+      row.innerHTML = `
+        <div class="user-row-info">
+          <div class="user-row-email">${this.escapeHtml(user.email)}${isSelf ? ' <span class="user-row-you">(you)</span>' : ''}</div>
+          <div class="user-row-name">${this.escapeHtml(user.name || '')}</div>
+        </div>
+        <div class="user-row-role">
+          <select data-user-id="${user.id}" ${isSelf ? 'disabled' : ''}>
+            <option value="readonly" ${user.role === 'readonly' ? 'selected' : ''}>Read Only</option>
+            <option value="moderator" ${user.role === 'moderator' ? 'selected' : ''}>Moderator</option>
+            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+          </select>
+        </div>
+        ${!isSelf ? `<button class="user-row-delete" data-user-id="${user.id}" title="Remove user">&times;</button>` : ''}
+      `;
+
+      // Bind role change
+      const select = row.querySelector('select');
+      if (!isSelf) {
+        select.addEventListener('change', () => this.updateUserRole(user.id, select.value));
+      }
+
+      // Bind delete
+      const deleteBtn = row.querySelector('.user-row-delete');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => this.deleteUserById(user.id, user.email));
+      }
+
+      list.appendChild(row);
+    }
+  },
+
+  async addUser() {
+    const email = document.getElementById('new-user-email').value.trim();
+    const name = document.getElementById('new-user-name').value.trim();
+    const role = document.getElementById('new-user-role').value;
+    const errorEl = document.getElementById('users-error');
+
+    if (!email) {
+      errorEl.textContent = 'Email is required';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    errorEl.classList.add('hidden');
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, role })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to add user');
+      }
+
+      document.getElementById('new-user-email').value = '';
+      document.getElementById('new-user-name').value = '';
+      document.getElementById('new-user-role').value = 'readonly';
+      this.loadUsers();
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.classList.remove('hidden');
+    }
+  },
+
+  async updateUserRole(userId, newRole) {
+    const errorEl = document.getElementById('users-error');
+    errorEl.classList.add('hidden');
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update role');
+      }
+
+      this.loadUsers();
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.classList.remove('hidden');
+      this.loadUsers();
+    }
+  },
+
+  async deleteUserById(userId, email) {
+    if (!confirm(`Remove ${email} from ChordStash?`)) return;
+
+    const errorEl = document.getElementById('users-error');
+    errorEl.classList.add('hidden');
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete user');
+      }
+      this.loadUsers();
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.classList.remove('hidden');
     }
   },
 
